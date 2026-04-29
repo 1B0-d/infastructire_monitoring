@@ -1,0 +1,16 @@
+{
+  "name": "sre-assignment-services",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node auth-service/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.8.0",
+    "mongoose": "^9.1.6",
+    "prom-client": "^15.1.3"
+  }
+}

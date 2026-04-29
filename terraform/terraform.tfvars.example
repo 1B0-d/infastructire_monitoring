@@ -1,0 +1,26 @@
+gcp_project_id = "your-gcp-project-id"
+gcp_region     = "europe-west1"
+gcp_zone       = "europe-west1-b"
+
+project_name = "sre-assignment"
+machine_type = "e2-medium"
+network      = "default"
+
+# Option A: leave empty and connect with:
+# gcloud compute ssh sre-assignment-vm --zone europe-west1-b --project your-gcp-project-id
+ssh_public_key_path = ""
+
+# Option B: use plain ssh by adding your public key:
+# Windows example:
+# ssh-keygen -t ed25519 -f "$env:USERPROFILE\\.ssh\\sre_assignment"
+# ssh_public_key_path = "C:/Users/ASUS/.ssh/sre_assignment.pub"
+ssh_user = "ubuntu"
+
+# For real deployments, restrict SSH and monitoring to your public IP:
+# ssh_cidr        = "YOUR_PUBLIC_IP/32"
+# monitoring_cidr = "YOUR_PUBLIC_IP/32"
+ssh_cidr        = "0.0.0.0/0"
+app_cidr        = "0.0.0.0/0"
+monitoring_cidr = "0.0.0.0/0"
+
+root_volume_size_gb = 20
