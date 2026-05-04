@@ -60,7 +60,13 @@ grafana
 3. Start:
 
 ```bash
-docker compose up --build
+docker compose up -d --build
+```
+
+On Windows PowerShell, the Assignment 6 preflight and startup automation can be run with:
+
+```powershell
+.\scripts\start-stack.ps1
 ```
 
 Open:
@@ -116,6 +122,24 @@ Tracked metrics include:
 - `sre_service_uptime_seconds`
 
 Grafana automatically provisions a dashboard named `SRE Microservices Overview`.
+
+Prometheus alert rules are loaded from `prometheus/alerts.yml`. Open `http://localhost:9090/alerts` to view service-down, unhealthy-service, error-rate, latency, CPU, memory, and restart alerts.
+
+## Capacity Planning
+
+Run a simple load test against `order-service`:
+
+```bash
+node scripts/load-test.mjs --url http://localhost:4002/health --requests 1000 --concurrency 50
+```
+
+Collect a Prometheus metric snapshot after the test:
+
+```powershell
+.\scripts\prometheus-snapshot.ps1
+```
+
+See `docs/assignment-6-automation-capacity.md` for the Assignment 6 automation and capacity-planning write-up.
 
 ## Service Communication
 
@@ -194,3 +218,4 @@ terraform apply
 ```
 
 See `docs/terraform-guide.md` for the full deployment flow.
+"# sre-task" 
