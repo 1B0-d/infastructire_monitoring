@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SRE Microservices Assignment Report</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #172033;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      background: #ffffff;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #0b1220;
+      line-height: 1.15;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28pt;
+    }
+
+    h2 {
+      margin: 28px 0 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #cfd8e3;
+      font-size: 17pt;
+    }
+
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 13pt;
+    }
+
+    p {
+      margin: 0 0 9px;
+    }
+
+    ul,
+    ol {
+      margin: 7px 0 12px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 3px 0;
+    }
+
+    code,
+    pre {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #eef2f7;
+      font-size: 10pt;
+    }
+
+    pre {
+      margin: 10px 0 12px;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+      background: #0f172a;
+      color: #e5edf7;
+      font-size: 9.5pt;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px;
+      font-size: 10pt;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border: 1px solid #d8e0ea;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef4fb;
+      color: #0b1220;
+    }
+
+    .cover {
+      display: flex;
+      min-height: 245mm;
+      flex-direction: column;
+      justify-content: center;
+      page-break-after: always;
+    }
+
+    .subtitle {
+      color: #475569;
+      font-size: 14pt;
+      margin-bottom: 22px;
+    }
+
+    .meta {
+      width: 100%;
+      max-width: 155mm;
+      border: 1px solid #d8e0ea;
+      border-radius: 10px;
+      padding: 16px 18px;
+      background: #f8fafc;
+    }
+
+    .meta p {
+      margin: 5px 0;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .badge {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eaf1ff;
+      color: #183b7a;
+      font-size: 10pt;
+      font-weight: 700;
+    }
+
+    .diagram {
+      margin: 12px 0 16px;
+      padding: 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #d8e0ea;
+    }
+
+    .figure {
+      page-break-inside: avoid;
+      margin: 18px 0 22px;
+    }
+
+    .figure img {
+      display: block;
+      width: 100%;
+      max-height: 180mm;
+      object-fit: contain;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .caption {
+      margin-top: 7px;
+      color: #475569;
+      font-size: 9.7pt;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .note {
+      padding: 11px 12px;
+      border-left: 4px solid #2563eb;
+      background: #eff6ff;
+      color: #1e3a8a;
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <h1>SRE Microservices Assignment Report</h1>
+    <p class="subtitle">Microservices, Docker Compose, Firebase Authentication, Prometheus, Grafana, and Incident Simulation</p>
+    <div class="meta">
+      <p><strong>Student:</strong> Ildar Savzikhanov</p>
+      <p><strong>Application:</strong> Portfolio and shop/order system adapted for SRE requirements</p>
+      <p><strong>Deployment target:</strong> Local Ubuntu virtual machine provisioned in Oracle VirtualBox</p>
+      <p><strong>Frontend URL during testing:</strong> <code>http://192.168.1.204:8080</code></p>
+      <p><strong>Monitoring:</strong> Prometheus on <code>:9090</code>, Grafana on <code>:3000</code></p>
+    </div>
+    <div class="badge-row">
+      <span class="badge">5 Microservices</span>
+      <span class="badge">Firebase Auth</span>
+      <span class="badge">MongoDB</span>
+      <span class="badge">Docker Compose</span>
+      <span class="badge">Prometheus</span>
+      <span class="badge">Grafana</span>
+      <span class="badge">Incident Recovery</span>
+      <span class="badge">Terraform IaC</span>
+    </div>
+  </section>
+
+  <h2>1. Executive Summary</h2>
+  <p>
+    The existing portfolio and shop/order applications were adapted into an SRE assignment system.
+    The final system contains a web interface, Firebase-based authentication, product and project data,
+    transactional order creation, five independent backend services, Docker Compose orchestration,
+    Prometheus metrics, Grafana visualization, and a controlled incident simulation.
+  </p>
+  <p>
+    Public cloud providers required billing activation for VM creation. To avoid paid cloud usage, the system
+    was provisioned on a local Ubuntu virtual machine in Oracle VirtualBox. This still satisfies the requirement
+    to provision a VM and run the application in an isolated server-like environment.
+  </p>
+
+  <h2>2. Architecture</h2>
+  <p>The application is split into five backend microservices plus a frontend gateway:</p>
+  <div class="diagram">
+<pre>Browser
+  -> Frontend nginx container :8080
+      -> auth-service    :4000
+      -> product-service :4001
+      -> order-service   :4002
+      -> user-service    :4003
+      -> chat-service    :4004
+
+user-service
+  -> order-service through Docker DNS:
+     http://order-service:4002/api/orders/my
+
+product-service / order-service / chat-service
+  -> mongodb:
+     mongodb://mongodb:27017/shop
+
+prometheus
+  -> scrapes /metrics from all five services
+
+grafana
+  -> visualizes Prometheus metrics</pre>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Port</th>
+        <th>Responsibility</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>auth-service</code></td>
+        <td>4000</td>
+        <td>Verifies Firebase ID tokens and exposes authenticated user/session endpoints.</td>
+      </tr>
+      <tr>
+        <td><code>product-service</code></td>
+        <td>4001</td>
+        <td>Serves product and category data from MongoDB.</td>
+      </tr>
+      <tr>
+        <td><code>order-service</code></td>
+        <td>4002</td>
+        <td>Creates orders and lists orders for the authenticated Firebase user.</td>
+      </tr>
+      <tr>
+        <td><code>user-service</code></td>
+        <td>4003</td>
+        <td>Serves portfolio profile/project data and internally calls order-service for user orders.</td>
+      </tr>
+      <tr>
+        <td><code>chat-service</code></td>
+        <td>4004</td>
+        <td>Stores and lists user/admin messages.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <strong>Database note:</strong> the original shop/order project already used MongoDB. For this assignment,
+    MongoDB was containerized and used as the persistent database layer. The same SRE principles apply:
+    isolated database container, environment-based configuration, internal Docker networking, and monitored
+    service dependencies.
+  </div>
+
+  <h2>3. Authentication</h2>
+  <p>
+    Authentication is handled by Firebase Authentication. The frontend signs the user in through Firebase,
+    receives a Firebase ID token, and sends it to backend services with the header
+    <code>Authorization: Bearer &lt;Firebase ID token&gt;</code>.
+  </p>
+  <p>
+    The backend services verify the same token using Firebase Admin SDK. If the token is missing or invalid,
+    protected endpoints return <code>401 Unauthorized</code>. For order creation, the decoded Firebase
+    <code>uid</code> is saved as <code>userId</code> in MongoDB.
+  </p>
+
+  <h2>4. Transactional Operation and Service-to-Service Communication</h2>
+  <p>
+    The transactional operation is order creation. The user creates an order from the dashboard, and
+    <code>order-service</code> stores the order in MongoDB with status <code>created</code>.
+  </p>
+  <p>
+    The dashboard displays orders through <code>user-service</code>. This service calls
+    <code>order-service</code> internally through the Docker network using
+    <code>http://order-service:4002/api/orders/my</code> and forwards the same Firebase bearer token.
+    This demonstrates independent backend services communicating with each other inside Docker Compose.
+  </p>
+
+  <h2>5. Docker and VM Deployment</h2>
+  <p>
+    The full system runs through Docker Compose on a local Ubuntu VM. The VM was created with Oracle VirtualBox,
+    configured with bridged networking, and accessed from the host machine using the VM IP address.
+  </p>
+  <p>Core run command:</p>
+<pre>docker compose up -d --build</pre>
+  <p>The Compose stack includes:</p>
+  <ul>
+    <li><code>frontend</code></li>
+    <li><code>auth-service</code></li>
+    <li><code>product-service</code></li>
+    <li><code>order-service</code></li>
+    <li><code>user-service</code></li>
+    <li><code>chat-service</code></li>
+    <li><code>mongodb</code></li>
+    <li><code>prometheus</code></li>
+    <li><code>grafana</code></li>
+  </ul>
+
+  <h2>6. Monitoring</h2>
+  <p>
+    Each service exposes <code>/health</code> and <code>/metrics</code>. Prometheus scrapes all five services
+    and itself. Grafana visualizes service status, uptime, request rate, error rate, and request duration.
+  </p>
+  <p>Tracked metric areas include:</p>
+  <ul>
+    <li>Total HTTP requests</li>
+    <li>Request duration</li>
+    <li>HTTP errors</li>
+    <li>Service health</li>
+    <li>Service uptime</li>
+  </ul>
+
+  <h2>7. Incident Simulation</h2>
+  <p>
+    The incident was simulated by breaking the order-service database connection. The MongoDB URL was changed from:
+  </p>
+<pre>MONGO_URL=mongodb://mongodb:27017/shop</pre>
+  <p>to:</p>
+<pre>MONGO_URL=mongodb://wrong-mongodb:27017/shop</pre>
+  <p>
+    This caused Mongo-dependent services such as <code>product-service</code>, <code>order-service</code>,
+    and <code>chat-service</code> to become unavailable. The authentication and user/profile services
+    continued to work, demonstrating partial system availability and graceful degradation.
+  </p>
+  <p>
+    Recovery was performed by restoring the correct <code>MONGO_URL</code> and restarting the affected services
+    with Docker Compose. Prometheus and Grafana confirmed that all targets returned to healthy status.
+  </p>
+
+  <h2>8. Incident Response Report</h2>
+  <h3>Incident Summary</h3>
+  <p>
+    The simulated incident was caused by an incorrect MongoDB connection string in the Mongo-dependent backend
+    services. As a result, order-related, product-related, and message-related functionality became unavailable,
+    while authentication and basic user profile functionality continued to work.
+  </p>
+
+  <h3>Impact Assessment</h3>
+  <p>
+    Users remained authenticated and could still access the dashboard profile area. However, users could not
+    reliably create or view orders, and sections depending on MongoDB showed degraded behavior. This affected
+    an important transactional workflow, but it did not take down the entire system.
+  </p>
+
+  <h3>Severity Classification</h3>
+  <p>
+    <strong>SEV-2 / Medium.</strong> The system was partially available, but a core transactional capability
+    was affected. Authentication and profile services remained available, reducing the severity from a full outage.
+  </p>
+
+  <h3>Timeline</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Event</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>00:20</td>
+        <td>Normal state confirmed in Grafana with service health values at 1.</td>
+      </tr>
+      <tr>
+        <td>00:37</td>
+        <td>Incorrect MongoDB hostname was applied through <code>MONGO_URL=mongodb://wrong-mongodb:27017/shop</code>.</td>
+      </tr>
+      <tr>
+        <td>00:38</td>
+        <td>Docker Compose status showed Mongo-dependent services becoming unavailable.</td>
+      </tr>
+      <tr>
+        <td>00:43</td>
+        <td>Grafana showed affected targets down and HTTP error rate increasing.</td>
+      </tr>
+      <tr>
+        <td>00:55</td>
+        <td>Correct MongoDB URL was restored and services were restarted with Docker Compose.</td>
+      </tr>
+      <tr>
+        <td>00:58</td>
+        <td>Grafana confirmed recovery with all service health values back to 1.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Root Cause</h3>
+  <p>
+    The root cause was an invalid database hostname in the <code>MONGO_URL</code> environment variable.
+    The affected services could not resolve or connect to <code>wrong-mongodb</code> through the Docker network.
+  </p>
+
+  <h3>Mitigation</h3>
+  <p>
+    The incorrect connection string was replaced with the correct internal Docker DNS hostname:
+    <code>mongodb</code>. The affected services were then rebuilt/restarted through Docker Compose.
+  </p>
+
+  <h3>Resolution Confirmation</h3>
+  <p>
+    After restarting the services, Prometheus targets returned to UP state, Grafana health values returned to 1,
+    and the dashboard functionality was restored. The recovery screenshots confirm both container-level and
+    monitoring-level recovery.
+  </p>
+
+  <h2>9. Postmortem Analysis</h2>
+  <h3>Customer Impact</h3>
+  <p>
+    During the incident, users could stay logged in and view profile information, but product, order, and message
+    workflows were degraded. The most important customer-facing impact was loss of the order creation and order
+    listing workflow.
+  </p>
+
+  <h3>Detection and Response Evaluation</h3>
+  <p>
+    Detection was successful because Prometheus and Grafana showed target health changes and an increase in HTTP
+    error rate. The response was also successful: container status was checked, the invalid database configuration
+    was identified, the correct value was restored, and service health was verified after restart.
+  </p>
+
+  <h3>Lessons Learned</h3>
+  <p>
+    The incident showed that configuration errors can break transactional functionality even when the VM,
+    frontend, and some backend services remain available. Monitoring should check not only container status,
+    but also application-level health and dependency health.
+  </p>
+
+  <h3>Action Items</h3>
+  <ol>
+    <li>Add stricter health checks for database connectivity.</li>
+    <li>Add alert rules for service-down states and high HTTP error rate.</li>
+    <li>Keep environment variables in a validated <code>.env.example</code> template.</li>
+    <li>Add a deployment checklist before restarting services.</li>
+    <li>Improve frontend fallback messages when a backend service is unavailable.</li>
+    <li>Separate dependency failure alerts from application failure alerts.</li>
+    <li>Document recovery commands in the README and deployment guide.</li>
+  </ol>
+
+  <h2>10. Terraform / Infrastructure as Code</h2>
+  <p>
+    Terraform configuration was prepared and validated as Infrastructure as Code evidence. The Terraform plan
+    creates a cloud VM and firewall rules for application and monitoring ports. Due to billing restrictions on
+    the selected public cloud provider, the Terraform configuration was validated with init/validate/plan, while
+    the runtime deployment was demonstrated on a locally provisioned Ubuntu VM. This local VM was used as a
+    controlled server-like environment for Docker Compose, monitoring, incident simulation, and recovery evidence.
+  </p>
+
+  <h2 class="page-break">11. Evidence Screenshots</h2>
+
+  <div class="figure">
+    <img src="../01-vm-running-virtualbox.png" alt="VirtualBox VM running">
+    <p class="caption"><strong>Figure 1.</strong> Ubuntu VM provisioned and running in Oracle VirtualBox.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../02-docker-compose-health-normal.png" alt="Docker Compose and health checks">
+    <p class="caption"><strong>Figure 2.</strong> Docker Compose stack running, with health endpoints returning successful responses.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../03-frontend-homepage-vm.png" alt="Frontend homepage">
+    <p class="caption"><strong>Figure 3.</strong> Web interface served from the VM at <code>192.168.1.204:8080</code>.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../04-authentication-page.png" alt="Authentication page">
+    <p class="caption"><strong>Figure 4.</strong> Authentication page with register, email login, and Google sign-in options.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../05-dashboard-profile-projects.png" alt="Dashboard profile projects">
+    <p class="caption"><strong>Figure 5.</strong> Authenticated user dashboard showing profile data and five microservice project cards.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../06-dashboard-products-before-order.png" alt="Dashboard product catalog">
+    <p class="caption"><strong>Figure 6.</strong> Product catalog loaded in the authenticated dashboard.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../07-order-created-my-orders.png" alt="Order creation">
+    <p class="caption"><strong>Figure 7.</strong> Order created successfully and listed under My Orders through the internal user-service to order-service flow.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../08-prometheus-targets-up.png" alt="Prometheus targets up">
+    <p class="caption"><strong>Figure 8.</strong> Prometheus target health page showing all service metric endpoints in UP state.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../09-grafana-normal-monitoring.png" alt="Grafana normal monitoring">
+    <p class="caption"><strong>Figure 9.</strong> Grafana dashboard during normal operation with targets, request rate, request duration, health, and uptime.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../10-incident-frontend-degraded.png" alt="Incident frontend degraded">
+    <p class="caption"><strong>Figure 10.</strong> Incident state: user remains authenticated, while Mongo-dependent product/order sections fail to load.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../11-incident-docker-compose-services-down.png" alt="Incident Docker Compose services down">
+    <p class="caption"><strong>Figure 11.</strong> Docker Compose evidence during the incident: Mongo-dependent services are unavailable while core services remain running.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../12-incident-grafana-targets-down-error-rate.png" alt="Incident Grafana targets down error rate">
+    <p class="caption"><strong>Figure 12.</strong> Grafana during the incident: affected targets are down and HTTP error rate increases.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../13-recovery-docker-compose-up.png" alt="Recovery Docker Compose up">
+    <p class="caption"><strong>Figure 13.</strong> Recovery state: services were rebuilt/restarted after fixing MongoDB connection settings.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../14-recovery-grafana-all-services-up.png" alt="Recovery Grafana all services up">
+    <p class="caption"><strong>Figure 14.</strong> Grafana after recovery: all targets and service health values are back to 1.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../15-terraform-validate-plan.png" alt="Terraform validate plan">
+    <p class="caption"><strong>Figure 15.</strong> Terraform validation and plan output as Infrastructure as Code evidence.</p>
+  </div>
+
+  <div class="figure">
+    <img src="../16-firebase-authorized-domain.png" alt="Firebase authorized domain">
+    <p class="caption"><strong>Figure 16.</strong> Firebase Authentication authorized domains configured for the VM IP address.</p>
+  </div>
+
+  <h2>12. Conclusion</h2>
+  <p>
+    The final system satisfies the assignment goals: it has a web UI, Firebase authentication, project and product data,
+    transactional order creation, five independent backend services, service-to-service communication, Docker Compose
+    deployment, Prometheus metrics, Grafana dashboards, and a documented incident simulation with recovery.
+  </p>
+</body>
+</html>
