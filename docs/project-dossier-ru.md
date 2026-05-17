@@ -16,7 +16,7 @@
 
 ```text
 Browser
-  -> frontend nginx :8080
+  -> frontend nginx :8080 local / :80 VM
       -> auth-service    :4000
       -> product-service :4001
       -> order-service   :4002
@@ -191,6 +191,13 @@ restart: unless-stopped
 ```
 
 This means Docker automatically restarts containers unless they were manually stopped.
+
+Port exposure is split between local development and cloud deployment:
+
+- local frontend uses `localhost:8080`;
+- VM frontend uses public `http://<VM_PUBLIC_IP>` on port `80`;
+- backend services `4000-4004` and MongoDB `27017` are bound to `127.0.0.1` and stay closed externally;
+- Grafana `3000` and Prometheus `9090` are local-only by default and can be reached through SSH tunnels.
 
 Health checks are configured for application services:
 
@@ -578,9 +585,10 @@ Terraform provisions:
 - Google Cloud Compute Engine VM;
 - firewall rules;
 - SSH access;
-- frontend HTTP ports;
-- Prometheus port `9090`;
-- Grafana port `3000`;
+- frontend HTTP port `80`;
+- closed backend and database ports by default;
+- optional restricted Prometheus port `9090`;
+- optional restricted Grafana port `3000`;
 - Docker installation through cloud-init.
 
 Important files:

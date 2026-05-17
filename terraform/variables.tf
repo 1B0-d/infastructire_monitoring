@@ -63,6 +63,18 @@ variable "app_cidr" {
   default     = "0.0.0.0/0"
 }
 
+variable "app_ports" {
+  description = "Public frontend ports opened by the VM firewall. Keep only 80 for the cloud deployment unless you intentionally run the frontend on another public port."
+  type        = list(string)
+  default     = ["80"]
+}
+
+variable "enable_monitoring_public_access" {
+  description = "Whether to create public firewall rules for Grafana and Prometheus. Prefer false and use SSH tunnels; if true, restrict monitoring_cidr to your own IP."
+  type        = bool
+  default     = false
+}
+
 variable "monitoring_cidr" {
   description = "CIDR allowed to access Grafana and Prometheus."
   type        = string

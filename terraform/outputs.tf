@@ -24,21 +24,21 @@ output "ssh_command" {
 }
 
 output "frontend_url" {
-  description = "Frontend URL if Docker Compose is mapped to port 80 on the VM."
+  description = "Frontend URL for the VM deployment when Docker Compose uses FRONTEND_PORT=80."
   value       = "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}"
 }
 
 output "frontend_compose_url" {
-  description = "Frontend URL with the current local Docker Compose port mapping."
-  value       = "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}:8080"
+  description = "Legacy frontend URL only if app_ports includes 8080 and Docker Compose uses FRONTEND_PORT=8080."
+  value       = contains(var.app_ports, "8080") ? "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}:8080" : "Port 8080 is closed by Terraform firewall."
 }
 
 output "grafana_url" {
-  description = "Grafana URL."
-  value       = "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}:3000"
+  description = "Grafana URL only when enable_monitoring_public_access is true and MONITORING_BIND_ADDRESS=0.0.0.0."
+  value       = var.enable_monitoring_public_access ? "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}:3000" : "Grafana public access is disabled. Use an SSH tunnel to localhost:3000."
 }
 
 output "prometheus_url" {
-  description = "Prometheus URL."
-  value       = "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}:9090"
+  description = "Prometheus URL only when enable_monitoring_public_access is true and MONITORING_BIND_ADDRESS=0.0.0.0."
+  value       = var.enable_monitoring_public_access ? "http://${google_compute_instance.sre.network_interface[0].access_config[0].nat_ip}:9090" : "Prometheus public access is disabled. Use an SSH tunnel to localhost:9090."
 }

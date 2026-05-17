@@ -38,7 +38,7 @@ resource "google_compute_firewall" "sre_app" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "8080"]
+    ports    = var.app_ports
   }
 
   source_ranges = [var.app_cidr]
@@ -46,6 +46,8 @@ resource "google_compute_firewall" "sre_app" {
 }
 
 resource "google_compute_firewall" "sre_monitoring" {
+  count = var.enable_monitoring_public_access ? 1 : 0
+
   name    = "${var.project_name}-allow-monitoring"
   network = var.network
 

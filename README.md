@@ -8,7 +8,7 @@ Current implemented stage: five microservices, Firebase authentication, MongoDB 
 
 ```text
 browser
-  -> frontend nginx :8080
+  -> frontend nginx :8080 local / :80 VM
       -> auth-service    :4000
       -> product-service :4001
       -> order-service   :4002
@@ -85,6 +85,31 @@ Grafana login:
 ```text
 admin / admin
 ```
+
+## Port Exposure
+
+Docker Compose uses port variables so local development and the Google Cloud VM can use different exposure rules.
+
+Local default:
+
+```env
+FRONTEND_PORT=8080
+BACKEND_BIND_ADDRESS=127.0.0.1
+MONITORING_BIND_ADDRESS=127.0.0.1
+```
+
+This means the frontend is available on `localhost:8080`, while backend ports `4000-4004`, MongoDB `27017`, Grafana `3000`, and Prometheus `9090` are bound to localhost only.
+
+VM recommended values:
+
+```env
+FRONTEND_PORT=80
+CORS_ORIGINS=http://<VM_PUBLIC_IP>
+BACKEND_BIND_ADDRESS=127.0.0.1
+MONITORING_BIND_ADDRESS=127.0.0.1
+```
+
+On the VM, the public frontend should be `http://<VM_PUBLIC_IP>`. Backend and database ports stay closed externally. Use SSH tunnels for Grafana and Prometheus, or explicitly enable restricted monitoring firewall access in Terraform.
 
 ## Authentication
 
@@ -203,7 +228,8 @@ They provision the infrastructure layer:
 
 - Google Cloud Compute Engine VM
 - Google Cloud firewall rules
-- SSH, HTTP, Grafana, and Prometheus ports
+- SSH and HTTP frontend ports
+- optional restricted Grafana and Prometheus ports
 - Docker and Docker Compose installation through cloud-init
 - Public IP outputs
 

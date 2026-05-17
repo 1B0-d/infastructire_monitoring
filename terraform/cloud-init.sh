@@ -25,6 +25,10 @@ Next deployment steps:
 1. git clone your project repository
 2. cd into the project
 3. create .env from .env.example
-4. add Firebase service account JSON
-5. run: docker compose up -d --build
+4. set FRONTEND_PORT=80 in .env
+5. add Firebase service account JSON
+6. run: docker compose up -d --build
+
+Public app URL: http://VM_PUBLIC_IP
+Grafana/Prometheus are local-only by default; use SSH tunnels for ports 3000 and 9090.
 MOTD

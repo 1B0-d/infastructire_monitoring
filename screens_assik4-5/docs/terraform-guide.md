@@ -33,10 +33,17 @@ Terraform uses Application Default Credentials from `gcloud auth application-def
 Terraform opens:
 
 - `22`: SSH
-- `80`: HTTP frontend if deployed on port 80
-- `8080`: current Docker Compose frontend mapping
+- `80`: public HTTP frontend
+
+Terraform keeps these closed by default:
+
+- `8080`: local-only frontend development port
+- `4000-4004`: backend services
+- `27017`: MongoDB
 - `3000`: Grafana
 - `9090`: Prometheus
+
+Prometheus and Grafana can be exposed only if `enable_monitoring_public_access = true`. If you enable it, restrict `monitoring_cidr` to your own public IP.
 
 ## Usage
 
@@ -60,6 +67,15 @@ gcp_project_id = "your-gcp-project-id"
 ```
 
 Recommended: restrict `ssh_cidr` and `monitoring_cidr` to your public IP.
+
+For the VM deployment, set the application environment to serve the frontend on port `80`:
+
+```env
+FRONTEND_PORT=80
+CORS_ORIGINS=http://<VM_PUBLIC_IP>
+BACKEND_BIND_ADDRESS=127.0.0.1
+MONITORING_BIND_ADDRESS=127.0.0.1
+```
 
 Then run:
 
@@ -105,6 +121,18 @@ Start the application:
 docker compose up -d --build
 ```
 
+The frontend will be available at:
+
+```text
+http://<public_ip>
+```
+
+Grafana and Prometheus are intentionally local-only by default. To view them through SSH tunnels:
+
+```bash
+gcloud compute ssh sre-assignment-vm --zone europe-west1-b --project <your-gcp-project-id> -- -L 3000:localhost:3000 -L 9090:localhost:9090
+```
+
 ## Screenshots For Assignment 5
 
 - `terraform init`
@@ -114,8 +142,8 @@ docker compose up -d --build
 - Google Cloud VM running
 - Google Cloud firewall rules
 - App running on the VM
-- Prometheus on `http://<public_ip>:9090`
-- Grafana on `http://<public_ip>:3000`
+- Prometheus through SSH tunnel on `http://localhost:9090`
+- Grafana through SSH tunnel on `http://localhost:3000`
 
 ## Cleanup
 

@@ -1,4 +1,4 @@
-gcp_project_id = "your-gcp-project-id"
+gcp_project_id = "portfolio-1a377"
 gcp_region     = "europe-west1"
 gcp_zone       = "europe-west1-b"
 
@@ -22,5 +22,13 @@ ssh_user = "ubuntu"
 ssh_cidr        = "0.0.0.0/0"
 app_cidr        = "0.0.0.0/0"
 monitoring_cidr = "0.0.0.0/0"
+
+# Cloud frontend: open only HTTP 80 by default.
+# Add "8080" only if you intentionally keep FRONTEND_PORT=8080 on the VM.
+app_ports = ["80"]
+
+# Keep Grafana and Prometheus closed on the public internet by default.
+# For browser access without SSH tunnels, set true and restrict monitoring_cidr to YOUR_PUBLIC_IP/32.
+enable_monitoring_public_access = false
 
 root_volume_size_gb = 20
